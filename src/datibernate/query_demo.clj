@@ -3,7 +3,6 @@
              [datibernate.query :as query]
              [datibernate.gen-from-db :as gen]))
 
-
 (defn create-db-with-schema
   [^java.lang.String uri ^java.lang.String schema ]
   (do
@@ -19,7 +18,6 @@
 (defn adapt-datomic-maps-to-java [results clazz conn]
   (let [adaptor (query/create-dict-getter-adapta clazz)]
     (->> results (map #(d/entity (d/db conn) (first %)) ,,,) (map adaptor ,,,))))
-
 
 (defn setup-test-environment [f]
   (let [conn (create-db-with-schema "datomic:mem://seattle" "demo-java-client/seattle-schema.dtm")]     

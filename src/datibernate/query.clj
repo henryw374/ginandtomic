@@ -5,24 +5,6 @@
              [datibernate.reflect :as my-reflect]
              [datibernate.gen-from-db :as gen]))
 
-(comment
-(use '[datomic.api :only [q db] :as d])
-(use 'clojure.pprint)
-
-;(def uri "datomic:mem://seattle")
-                                        
-(def uri "datomic:mem://billshare")
-(d/create-database uri)
-(def conn (d/connect uri))
-(def schema-tx (read-string (slurp "../billshare/resources/schema/bill-schema.clj")))
-@(d/transact conn schema-tx)
-(def data-tx (read-string (slurp "../billshare/resources/schema/billshare-sampledata.clj")))
-;; submit schema transaction
-@(d/transact conn data-tx)
-
-(->> (d/q '[:find ?c :where [?c :community/name ?x]] (d/db conn)) ffirst (d/entity (d/db conn)))
-)
-
 (defn adapt-method [class method]
   (let [method-name  (:name method)
         method-returns  (:return-type method)
@@ -58,8 +40,6 @@
   (let [methods (:members (my-reflect/reflect-methods class))]
     (map (partial adapt-method class) methods)))
 
-(comment (memoize)) ;;memo had probs... not sure why
-
 (def create-dict-getter-adapta
   (fn [class]
     (let [asym (gensym)
@@ -67,14 +47,3 @@
           classname (symbol (.getName class))]       
       (eval     
        `(fn [~asym] (reify-from-maps ~classname ~asym ~emit-method-body ~create-dict-getter-adapta ~@ms))))))
-
-(comment (.getRelationshipStatus (first (.getUserGroupRelation ((create-dict-getter-adapta generated.User) {:user/userGroupRelation [{:userGroupRelation/relationshipStatus "ACTIVE"}]})))))
-
-(comment 
-  (def tst
-    (fn [class]
-      (let [asym (gensym)
-            ms (get-methods-from-class class)
-            classname (symbol (.getName class))] 
-        (fn [asym]             
-          (macroexpand-1 `(reify-from-maps ~classname ~asym ~emit-method-body ~create-dict-getter-adapta ~@ms)))))))

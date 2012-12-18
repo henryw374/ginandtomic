@@ -2,38 +2,6 @@
   (:require [datomic.api :only [q db] :as d]
             [clojure.string :as str]))
 
-(comment
-  (in-ns 'datibernate.gen-from-db)
-
-  (use '[datomic.api :only [q db] :as d])
-(use 'clojure.pprint)
-
-;; store database uri
-(def uri "datomic:mem://seattle")
-
-;; create database
-(d/create-database uri)
-
-;; connect to database
-(def conn (d/connect uri))
-
-(def schema-tx (read-string (slurp "demo-java-client/seattle-schema.dtm")))
-@(d/transact conn schema-tx)
-(def data-tx (read-string (slurp "demo-java-client/seattle-data0.dtm")))
-@(d/transact conn data-tx)
-
-(use 'datibernate.query)
-
- (def x (->> (d/q '[:find ?c :where [?c :community/name ?x]] (d/db conn)) ffirst (d/entity (d/db conn)))
-   )
-
-(gen conn "java")
-((create-dict-getter-adapta generated.Community) x)
-
-)
-
-
-
 (defn query-for-attributes [conn]
   (map #(d/entity (d/db conn) (first %)) (d/q '[:find  ?c :where
                                                 [?c :db/ident ?ident]] (d/db conn))))
