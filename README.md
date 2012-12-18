@@ -44,6 +44,7 @@ query capability
 ## problem areas  
 ; reference to entity maps is maintained... no detached objects as yet  
 ; doing a reify per entity.. dont know if that is a good idea... perm gen fills up?  
+; the classes are generated from the most up to date model of the db... so if querying an old model they may not match. this is a trickier problem
   
 ## License  
   
